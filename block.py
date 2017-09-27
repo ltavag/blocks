@@ -5,6 +5,7 @@ import json
 import sys
 import struct
 import hashlib
+import time
 
 """
 	From https://blockchain.info/api/blockchain_api, 
@@ -29,6 +30,10 @@ import hashlib
 {
 """
 
+VERSION = 1
+BITS = 1
+ZEROS = 1
+
 
 def swap_order(x):
     x = x[::-1]
@@ -50,6 +55,40 @@ def build_hash(**kwargs):
     ]).decode('hex')
     h = hashlib.sha256(hashlib.sha256(parts).digest()).digest()
     return kwargs['nonce'], h[::-1].encode('hex_codec')
+
+
+class BlockMiner():
+
+    def __init__(self, transactions, prev_hash):
+        self.transactions = transactions
+        self.prev_block = prev_hash
+
+    def mine(self):
+        self.merkle_root = merkle.get_merkle_root_for_transactions(
+            self.transactions)
+        block_time = int(time.time())
+        nonce = 0
+        while True:
+            nonce, block_hash = build_hash(ver=VERSION,
+                                           prev_block=self.prev_block,
+                                           mrkl_root=self.merkle_root,
+                                           time=block_time,
+                                           bits=BITS,
+                                           nonce=nonce)
+
+            if not block_hash.startswith(ZEROS * '0'):
+                nonce += 1
+            else:
+                return {
+                    'prev_block': self.prev_block,
+                    'version': VERSION,
+                    'mrkl_root': self.merkle_root,
+                    'time': block_time,
+                    'bits': BITS,
+                    'nonce': nonce,
+                    'hash': block_hash,
+                    'tx': self.transactions
+                }
 
 
 if __name__ == '__main__':
