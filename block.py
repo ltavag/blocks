@@ -6,6 +6,8 @@ import sys
 import struct
 import hashlib
 import time
+from collections import deque
+from transaction import VoteTransaction
 
 """
 	From https://blockchain.info/api/blockchain_api, 
@@ -32,7 +34,7 @@ import time
 
 VERSION = 1
 BITS = 1
-ZEROS = 1
+ZEROS = 2
 
 
 def swap_order(x):
@@ -59,13 +61,22 @@ def build_hash(**kwargs):
 
 class BlockMiner():
 
-    def __init__(self, transactions, prev_hash):
+    def __init__(self, transactions, prev_block):
         self.transactions = transactions
-        self.prev_block = prev_hash
+        self.prev_block = prev_block
 
-    def mine(self):
-        self.merkle_root = merkle.get_merkle_root_for_transactions(
-            self.transactions)
+    def mine_for(self, chain):
+        self.validated_transactions = []
+
+        for t in self.transactions:
+            # try:
+            t.validate(self.validated_transactions, chain)
+            self.validated_transactions.append(t)
+            # except Exception as e:
+            # print repr(e)
+
+        self.merkle_root = merkle.get_merkle_root_from_interior_nodes(
+            deque([x['hash'] for x in self.validated_transactions]))
         block_time = int(time.time())
         nonce = 0
         while True:
@@ -87,7 +98,7 @@ class BlockMiner():
                     'bits': BITS,
                     'nonce': nonce,
                     'hash': block_hash,
-                    'tx': self.transactions
+                    'tx': self.validated_transactions
                 }
 
 

@@ -31,12 +31,12 @@ IQIDAQAB
 -----END PUBLIC KEY-----"""
 
 
-def sign_with_private_key(val, keypath):
-    with open(keypath, 'r') as f:
+def sign_with_private_key(val):
+    with open(REGISTER_PRIV_KEY, 'r') as f:
         priv_key = crypto.load_privatekey(crypto.FILETYPE_PEM, f.read())
-        return crypto.sign(priv_key,
-                           val,
-                           'sha256')
+        return base64.b64encode(crypto.sign(priv_key,
+                                            val,
+                                            'sha256'))
 
 
 def verify_register_key(signed, val):
@@ -49,14 +49,56 @@ def verify_register_key(signed, val):
     x509.set_pubkey(pub_key)
 
     try:
-        crypto.verify(x509, signed, val, 'sha256')
+        crypto.verify(x509, base64.b64decode(signed), val, 'sha256')
+        return True
+    except Exception as e:
+        return False
+
+
+def create_new_voter():
+    """
+            This function hands out a public key with which 
+						to verify a signed string of 'valid_voter', and 
+						throws away the private key. It is going to stick
+						the public key in the 'out' of the registration transaction
+						and then send the signature to the voter to vote with.
+						We can validate the vote, by verifying the signature with 
+						the public key in the registration transaction.
+    """
+
+    k = crypto.PKey()
+    k.generate_key(crypto.TYPE_RSA, 2048)
+    pub_key = base64.b64encode(crypto.dump_publickey(crypto.FILETYPE_PEM, k))
+    signed = base64.b64encode(crypto.sign(k, 'valid_voter', 'sha256'))
+    return pub_key, signed
+
+
+def verify_voter(pub_key, signed_data):
+    """
+                                                This function is meant to verify that the signature 
+                                                from the vote matches the 'out' pub_key of a registration
+                                                transaction.
+    """
+
+    pub_key = crypto.load_publickey(
+        crypto.FILETYPE_PEM, base64.b64decode(pub_key))
+    x509 = crypto.X509()
+    x509.set_pubkey(pub_key)
+
+    try:
+        crypto.verify(x509, base64.b64decode(
+            signed_data), 'valid_voter', 'sha256')
         return True
     except:
         return False
 
 
 if __name__ == '__main__':
+                # Test out the
     s = sign_with_private_key('a', REGISTER_PRIV_KEY)
     # print base64.b64encode(s)
     # You'll need to base64 encode these guys if you want to pass them around in the blocks
     print verify_register_key(s, 'a')
+
+    pub_key, signed = create_new_voter()
+    print verify_voter(pub_key, signed)
