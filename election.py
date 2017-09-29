@@ -10,9 +10,10 @@ class InvalidVoteException(Exception):
 
 
 class Election(defaultdict):
-    def __init__(self, vote_type, options):
+    def __init__(self, position, vote_type, options):
         self.options = options
         self.vote_type = vote_type
+        self.position = position
         defaultdict.__init__(self, int)
 
     def validate_vote(self, vote):

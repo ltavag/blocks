@@ -57,6 +57,19 @@ class Transaction(dict):
         for k, v in kwargs.iteritems():
             self[k] = v
 
+    @classmethod
+    def from_json(self,json_string):
+        """
+            This is a factory method for deserializing
+            json transactions. It inspects the body to 
+            determine which type of transaction to instantiate.
+        """
+        kwargs = json.loads(json_string)
+        if 'ballot_votes' in kwargs:
+            return RegistrationTransaction(**kwargs)
+        else:
+            return VoteTransaction(**kwargs)
+
     def finalize(self):
         tx_hash = sha256(json.dumps(self)).hexdigest()
         self['hash'] = tx_hash
@@ -66,9 +79,9 @@ class Transaction(dict):
 class RegistrationTransaction(Transaction):
     def __init__(self):
         """
-                        Initialize a registration transaction that allows people
-                        to vote. You'll have to pull off the signature and send it 
-                        to the voter.
+            Initialize a registration transaction that allows people
+            to vote. You'll have to pull off the signature and send it 
+            to the voter.
         """
 
         register_id = str(uuid.uuid4())
@@ -84,8 +97,8 @@ class RegistrationTransaction(Transaction):
                  block_chain):
         """
                 Validate that my input key is acceptable for registration.
-                                                                We are confirming that the registration was obtained with 
-                                                                the correct private key.
+                We are confirming that the registration was obtained with 
+                the correct private key.
         """
 
         if not key_verification.verify_register_key(self['input']['signed_register_id'],
@@ -99,10 +112,10 @@ class VoteTransaction(Transaction):
                  current_transaction_array,
                  block_chain):
         """
-                Validate that 
-                        1. My input is a real registration transaction in earlier blocks
-                        2. I've satisfied the output clause of the registration
-                        3. My vote is valid for the ballot 
+            Validate that 
+                1. My input is a real registration transaction in earlier blocks
+                2. I've satisfied the output clause of the registration
+                3. My vote is valid for the ballot 
         """
         input_transaction_id = self['input']['reg_tx_hash']
 
@@ -136,7 +149,15 @@ class VoteTransaction(Transaction):
 
 
 if __name__ == '__main__':
-    t = Transaction(hello=1,
-                    goodbye=2)
-    t.finalize()
-    print t
+    import argparse
+    import sys
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--trans-type', type=str, choices= ['reg','vote'], help = 'Type of transaction to create')
+    args = parser.parse_args()
+    if args.trans_type == 'reg':
+        r = RegistrationTransaction()
+        r.finalize()
+        print >> sys.stderr, 'Vote with the key', r.signed_data
+        print >> sys.stdout, json.dumps(r, indent=2)
+
+

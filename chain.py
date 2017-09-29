@@ -26,12 +26,21 @@ class VoteChain(list):
 if __name__ == '__main__':
 
     # Initialize the election
-    CommanderInIceCream = Election(
-        'RANK', ['ReeseWithoutASpoon', 'ChocoChipDough', 'MagicBrowny'])
-    DairyQueenSecondTerm = Election('MAJORITY', ['yes', 'no'])
-    StateDistrictMM = Election(
-        'PICKTWO', ['PnutButter', 'CreamCKol', 'MarshMallow'])
-    CountyVanilla = Election('MAJORITY', ['yes', 'no'])
+    CommanderInIceCream = Election('CommanderInIceCream',
+                                    'RANK',
+                                    ['ReeseWithoutASpoon', 'ChocoChipDough', 'MagicBrowny'])
+
+    DairyQueenSecondTerm = Election('DairyQueenSecondTerm',
+                                    'MAJORITY',
+                                    ['yes', 'no'])
+
+    StateDistrictMM = Election('StateDistrictMM',
+                                'PICKTWO',
+                                ['PnutButter', 'CreamCKol', 'MarshMallow'])
+
+    CountyVanilla = Election('CountyVanilla',
+                            'MAJORITY',
+                            ['yes', 'no'])
     ballot = [
         CommanderInIceCream,
         DairyQueenSecondTerm,
