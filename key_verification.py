@@ -57,12 +57,12 @@ def verify_register_key(signed, val):
 def create_new_voter():
     """
             This function hands out a public key with which 
-						to verify a signed string of 'valid_voter', and 
-						throws away the private key. It is going to stick
-						the public key in the 'out' of the registration transaction
-						and then send the signature to the voter to vote with.
-						We can validate the vote, by verifying the signature with 
-						the public key in the registration transaction.
+                                                to verify a signed string of 'valid_voter', and 
+                                                throws away the private key. It is going to stick
+                                                the public key in the 'out' of the registration transaction
+                                                and then send the signature to the voter to vote with.
+                                                We can validate the vote, by verifying the signature with 
+                                                the public key in the registration transaction.
     """
 
     k = crypto.PKey()

@@ -58,7 +58,7 @@ class Transaction(dict):
             self[k] = v
 
     @classmethod
-    def from_json(self,json_string):
+    def from_json(self, json_string):
         """
             This is a factory method for deserializing
             json transactions. It inspects the body to 
@@ -94,7 +94,6 @@ class RegistrationTransaction(Transaction):
         super(RegistrationTransaction, self).__init__(input={
             "register_id": register_id, "signed_register_id": signed_register_id}, out={"pub_key": pub_key})
         self.signed_data = signed_data
-
 
     def validate(self,
                  current_transaction_array,
@@ -156,12 +155,11 @@ if __name__ == '__main__':
     import argparse
     import sys
     parser = argparse.ArgumentParser()
-    parser.add_argument('--trans-type', type=str, choices= ['reg','vote'], help = 'Type of transaction to create')
+    parser.add_argument('--trans-type', type=str,
+                        choices=['reg', 'vote'], help='Type of transaction to create')
     args = parser.parse_args()
     if args.trans_type == 'reg':
         r = RegistrationTransaction()
         r.finalize()
         print >> sys.stderr, 'Vote with the key', r.signed_data
         print >> sys.stdout, json.dumps(r, indent=2)
-
-
