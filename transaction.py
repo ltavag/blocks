@@ -66,9 +66,9 @@ class Transaction(dict):
         """
         kwargs = json.loads(json_string)
         if 'ballot_votes' in kwargs:
-            return RegistrationTransaction(**kwargs)
-        else:
             return VoteTransaction(**kwargs)
+        else:
+            return RegistrationTransaction(**kwargs)
 
     def finalize(self):
         tx_hash = sha256(json.dumps(self)).hexdigest()
@@ -77,12 +77,15 @@ class Transaction(dict):
 
 
 class RegistrationTransaction(Transaction):
-    def __init__(self):
+    def __init__(self, **kwargs):
         """
             Initialize a registration transaction that allows people
             to vote. You'll have to pull off the signature and send it 
             to the voter.
         """
+        if kwargs:
+            super(RegistrationTransaction, self).__init__(**kwargs)
+            return
 
         register_id = str(uuid.uuid4())
         signed_register_id = key_verification.sign_with_private_key(
@@ -91,6 +94,7 @@ class RegistrationTransaction(Transaction):
         super(RegistrationTransaction, self).__init__(input={
             "register_id": register_id, "signed_register_id": signed_register_id}, out={"pub_key": pub_key})
         self.signed_data = signed_data
+
 
     def validate(self,
                  current_transaction_array,

@@ -69,11 +69,11 @@ class BlockMiner():
         self.validated_transactions = []
 
         for t in self.transactions:
-            try:
-                t.validate(self.validated_transactions, chain)
-                self.validated_transactions.append(t)
-            except Exception as e:
-                print repr(e)
+            t.validate(self.validated_transactions, chain)
+            self.validated_transactions.append(t)
+
+        if len(self.validated_transactions) == 0:
+            raise Exception, 'No valid transactions for current block'
 
         self.merkle_root = merkle.get_merkle_root_from_interior_nodes(
             deque([x['hash'] for x in self.validated_transactions]))
