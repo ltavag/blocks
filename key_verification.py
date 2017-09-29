@@ -6,17 +6,16 @@ import base64
 """
 
 	1.Generate a private key
-	lucky@luckyv1:~/.ssh$ ssh-keygen -t rsa -C registrar
-						  Generating public/private rsa key pair.
-						  Enter file in which to save the key (/home/lucky/.ssh/id_rsa): /home/lucky/.ssh/register
-						  Enter passphrase (empty for no passphrase): 
-						  Enter same passphrase again: 
-						  Your identification has been saved in /home/lucky/.ssh/register.
-						  Your public key has been saved in /home/lucky/.ssh/register.pub.
+        lucky@luckyv1:~/.ssh$ ssh-keygen -t rsa -C registrar
+        Generating public/private rsa key pair.
+        Enter file in which to save the key (/home/lucky/.ssh/id_rsa): /home/lucky/.ssh/register
+        Enter passphrase (empty for no passphrase): 
+        Enter same passphrase again: 
+        Your identification has been saved in /home/lucky/.ssh/register.
+        Your public key has been saved in /home/lucky/.ssh/register.pub.
 	2. Grab its public key
-						  lucky@luckyv1:~/blocks$ openssl rsa -pubout -in ~/.ssh/register 
-						  writing RSA key ... output below
-	
+        lucky@luckyv1:~/blocks$ openssl rsa -pubout -in ~/.ssh/register 
+        writing RSA key ... output below
 """
 
 REGISTER_PRIV_KEY = "/home/lucky/.ssh/register"

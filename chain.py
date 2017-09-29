@@ -13,9 +13,9 @@ import key_verification
 class VoteChain(list):
     def __init__(self, ballot):
         """
-						Lets initialize our block chain with its genesis block,
-						we'll also attach the shape of the ballad to the vote. 
-				"""
+                Lets initialize our block chain with its genesis block,
+                we'll also attach the shape of the ballad to the vote.
+        """
         self.ballot = ballot
         self.append({
             'name': 'GENESISBLOCK',

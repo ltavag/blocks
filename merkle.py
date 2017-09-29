@@ -6,10 +6,10 @@ from hashlib import sha256
 
 def get_merkle_root_from_interior_nodes(current_tier):
     """
-            This is a recursive function to build a merkle tree and 
-            return the merkle root hash.  The input to this tree must be an 
-            deque of already hashed transactions. You probably want to pass in 
-            map(lambda x:sha256(x).hexdigest(), transactions))
+        This is a recursive function to build a merkle tree and 
+        return the merkle root hash.  The input to this tree must be an 
+        deque of already hashed transactions. You probably want to pass in 
+        map(lambda x:sha256(x).hexdigest(), transactions))
     """
 
     if len(current_tier) == 1:
