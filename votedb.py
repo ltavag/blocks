@@ -21,7 +21,7 @@ from block import BlockMiner
 import texter
 
 tornado.options.define("port",
-                       default=8080,
+                       default=80,
                        help="Webapp runs on this port",
                        type=int)
 
