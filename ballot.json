@@ -1,0 +1,74 @@
+[
+    {
+        "description": "Rank candidates in order of choice. Mark your favorite candidate as first choice and then indicate your second and additional back-up choices in order of choice.",
+        "name": "CommanderInIceCream",
+        "options": [
+            {
+                "name": "ReeseWithoutASpoon",
+                "pretty_name": "ReeseWithoutASpoon - Democrat for C.I.C."
+            },
+            {
+                "name": "ChocoChipDough",
+                "pretty_name": "Choco 'Chip' Dough - Republican for C.I.C."
+            },
+            {
+                "name": "MagicBrowny",
+                "pretty_name": "MagicBrowny - Independent for C.I.C."
+            }
+        ],
+        "pretty_name": "For Commander in Cream and Vice Ice",
+        "type": "RANK"
+    },
+    {
+        "description": "Shall Justice Mint C Chip of the Supreme Court of the state of ice cream be retained in office for another term? ",
+        "name": "DairyQueenSecondTerm",
+        "options": [
+            {
+                "name": "yes",
+                "pretty_name": "Yes"
+            },
+            {
+                "name": "no",
+                "pretty_name": "No"
+            }
+        ],
+        "pretty_name": "For Chief Dairy Queen",
+        "type": "MAJORITY"
+    },
+    {
+        "description": "",
+        "name": "StateDistrictMM",
+        "options": [
+            {
+                "name": "PnutButter",
+                "pretty_name": "Pnut Butter (REPUBLICAN)"
+            },
+            {
+                "name": "CreamCKol",
+                "pretty_name": "Cream C. Kol (INDEPENDENT)"
+            },
+            {
+                "name": "MarshMallow",
+                "pretty_name": "Marsh Mallow (DEMOCRAT)"
+            }
+        ],
+        "pretty_name": "For State Rep District M&M",
+        "type": "PICKTWO"
+    },
+    {
+        "description": "This is a fiercely debated topic and CI-16 would officially enumerate in written legislative text in perpetuity which flavor has favor - namely vanilla is better, unequivocally than chocolate. ",
+        "name": "CountyVanilla",
+        "options": [
+            {
+                "name": "yes",
+                "pretty_name": "Yes"
+            },
+            {
+                "name": "no",
+                "pretty_name": "No"
+            }
+        ],
+        "pretty_name": "Make Vanilla (over chocolate) the official best flavor.",
+        "type": "MAJORITY"
+    }
+]

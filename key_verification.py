@@ -3,6 +3,7 @@
 from OpenSSL import crypto
 import pprint
 import base64
+import urllib
 """
 
 	1.Generate a private key
@@ -56,13 +57,13 @@ def verify_register_key(signed, val):
 
 def create_new_voter():
     """
-            This function hands out a public key with which 
-                                                to verify a signed string of 'valid_voter', and 
-                                                throws away the private key. It is going to stick
-                                                the public key in the 'out' of the registration transaction
-                                                and then send the signature to the voter to vote with.
-                                                We can validate the vote, by verifying the signature with 
-                                                the public key in the registration transaction.
+        This function hands out a public key with which 
+        to verify a signed string of 'valid_voter', and 
+        throws away the private key. It is going to stick
+        the public key in the 'out' of the registration transaction
+        and then send the signature to the voter to vote with.
+        We can validate the vote, by verifying the signature with 
+        the public key in the registration transaction.
     """
 
     k = crypto.PKey()
@@ -74,9 +75,9 @@ def create_new_voter():
 
 def verify_voter(pub_key, signed_data):
     """
-                                                This function is meant to verify that the signature 
-                                                from the vote matches the 'out' pub_key of a registration
-                                                transaction.
+        This function is meant to verify that the signature 
+        from the vote matches the 'out' pub_key of a registration
+        transaction.
     """
 
     pub_key = crypto.load_publickey(
@@ -86,7 +87,7 @@ def verify_voter(pub_key, signed_data):
 
     try:
         crypto.verify(x509, base64.b64decode(
-            signed_data), 'valid_voter', 'sha256')
+            urllib.unquote(signed_data)), 'valid_voter', 'sha256')
         return True
     except:
         return False

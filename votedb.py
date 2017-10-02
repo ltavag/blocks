@@ -14,7 +14,7 @@ env = Environment(
     loader=FileSystemLoader(os.path.join(THIS_DIR, 'templates'))
 )
 
-from election import Election
+from election import Election, InvalidVoteException
 from chain import VoteChain
 from transaction import RegistrationTransaction, VoteTransaction
 from block import BlockMiner
@@ -41,6 +41,11 @@ class ChainDumpHandler(tornado.web.RequestHandler):
     def get(self):
         global chain
         self.write(json.dumps(chain, indent=2))
+
+class UnminedTransactionHandler(tornado.web.RequestHandler):
+    def get(self):
+        global current_transactions
+        self.write(json.dumps(current_transactions, indent=2))
 
 
 class RegistrationHandler(tornado.web.RequestHandler):
@@ -77,15 +82,12 @@ class MiningHandler(tornado.web.RequestHandler):
         current_transactions = []
 
 
-class RegistrationForm(tornado.web.RequestHandler):
+class WebRegistrationHandler(tornado.web.RequestHandler):
     def get(self):
         template = env.get_template('register.html')
         self.write(template.render())
 
-
-class WebRegistrationHandler(tornado.web.RequestHandler):
     def post(self):
-        print self.request.body
         form_args = {x.split('=')[0]: x.split('=')[1]
                      for x in self.request.body.split('&')}
         name = form_args['name']
@@ -118,8 +120,49 @@ class WebRegistrationHandler(tornado.web.RequestHandler):
 
 class WebVotingHandler(tornado.web.RequestHandler):
     def get(self):
-        self.write('TIME TO VOTE ')
+        global ballot_conf
+        template = env.get_template('vote.html')
+        self.write(template.render(ballot = ballot_conf, rg_tx = self.request.uri.split('/')[-1]))
 
+    def post(self):
+        global chain
+        form_args = {x.split('=')[0]: x.split('=')[1]
+                     for x in self.request.body.split('&')}
+
+        #Construct the vote from post body
+        ballot_votes = [ {k:int(v) for k,v in form_args.iteritems() if k in chain.ballot[0].options and v.isdigit()},
+                    {v:1 for k,v in form_args.iteritems() if k == 'DairyQueenSecondTerm'},
+                    {k:1 for k,v in form_args.iteritems() if k in chain.ballot[2].options},
+                    {v:1 for k,v in form_args.iteritems() if k == 'CountyVanilla'}
+        ]
+
+        try:
+            for i, election in enumerate(chain.ballot):
+                election.validate_vote(ballot_votes[i])
+        except InvalidVoteException as e:
+            self.write(repr(e))
+            self.write(repr(e.message))
+        else:
+            t = VoteTransaction(input={
+                "reg_tx_hash": form_args['register_tx'],
+                "signature": form_args['signature'],
+            },
+            ballot_votes=ballot_votes)
+            t.finalize()
+
+            def handle_request(response):
+                if response.error:
+                    print 'ERROR', response.error
+                else:
+                    print 'SUCCESS', response.body
+
+            # Push the registration transaction into our DB via HTTP call
+            http = httpclient.AsyncHTTPClient()
+            data = json.dumps(t)
+            http.fetch("http://127.0.0.1:8080/vote",
+                       handle_request, method='POST', body=data)
+            self.write('YOUR VOTE HAS BEEN SUBMITTED')
+        
 
 def main():
     """
@@ -128,28 +171,11 @@ def main():
     """
 
     global chain
-    # Initialize the election
-    CommanderInIceCream = Election('CommanderInIceCream',
-                                   'RANK',
-                                   ['ReeseWithoutASpoon', 'ChocoChipDough', 'MagicBrowny'])
-
-    DairyQueenSecondTerm = Election('DairyQueenSecondTerm',
-                                    'MAJORITY',
-                                    ['yes', 'no'])
-
-    StateDistrictMM = Election('StateDistrictMM',
-                               'PICKTWO',
-                               ['PnutButter', 'CreamCKol', 'MarshMallow'])
-
-    CountyVanilla = Election('CountyVanilla',
-                             'MAJORITY',
-                             ['yes', 'no'])
-    ballot = [
-        CommanderInIceCream,
-        DairyQueenSecondTerm,
-        StateDistrictMM,
-        CountyVanilla
-    ]
+    global ballot_conf 
+    ballot_conf = json.load(open('ballot.json'))
+    ballot = []
+    for x in ballot_conf:
+        ballot.append(Election(x['name'], x['type'], [y['name'] for y in x['options']]))
     chain = VoteChain(ballot)
 
     tornado.options.parse_command_line()
@@ -159,9 +185,9 @@ def main():
         (r"/vote", VoteHandler),
         (r"/mine", MiningHandler),
         (r"/chain", ChainDumpHandler),
-        (r"/register", RegistrationForm),
+        (r"/trans", UnminedTransactionHandler),
         (r"/webregister", WebRegistrationHandler),
-        (r"/voter\/.*", WebVotingHandler),
+        (r"/voter.*", WebVotingHandler),
     ])
     http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(options.port)

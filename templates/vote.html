@@ -1,0 +1,61 @@
+<!DOCTYPE HTML>
+<head> 
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+
+<body>
+<ul class="nav nav-tabs">
+  <div role="presentation" class="navbar-brand">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+      Lucky's Voter <span class="caret"></span>
+    </a>
+  </div>
+</ul>
+
+<br>
+<br>
+
+<div class="container">
+    <form action="/voter" method="post" >
+      <div class="form-horizontal">
+        <h3>{{ ballot[0]['pretty_name'] }}</h3>
+        <h5>{{ ballot[0]['description'] }}</h5><br>
+        {% for option in ballot[0]['options'] %}
+            <label for="{{ option['name'] }}" style="padding-left:1em">{{ option['pretty_name'] }}</label>
+            <input name="{{ option['name'] }}" type="text" class="col-sm-3" style="width:50px" id="{{ option['name'] }}"><br><br>
+        {% endfor %}
+      </div>
+       
+      <br><br>
+        <h3>{{ ballot[1]['pretty_name'] }}</h3>
+        <h5>{{ ballot[1]['description'] }}</h5>
+        <input type="radio" name="{{ballot[1]['name']}}" value="yes" checked> Yes<br>
+        <input type="radio" name="{{ballot[1]['name']}}" value="no" > No<br>
+
+      <br><br>
+      <div class="form-horizontal">
+        <h3>{{ ballot[2]['pretty_name'] }}</h3>
+        {% for option in ballot[2]['options'] %}
+            <div class="checkbox">
+            <label class="checkbox-inline"><input name="{{ option['name'] }}" type="checkbox" class=""  id="{{ option['name'] }}">{{ option['pretty_name'] }}</label>
+            </div>
+        {% endfor %}
+      </div>
+
+      <br><br>
+        <h3>{{ ballot[3]['pretty_name'] }}</h3>
+        <h5>{{ ballot[3]['description'] }}</h5>
+        <input type="radio" name="{{ballot[3]['name']}}" value="yes" checked> Yes<br>
+        <input type="radio" name="{{ballot[3]['name']}}" value="no" > No<br>
+
+      <br>
+      <br>
+      <label for="signature">Registration Transaction</label>
+      <input name="register_tx" type="text" class="form-control" id="register_tx" value="{{ rg_tx }}"><br><br>
+      <label for="signature">Verification Token</label>
+      <input name="signature" type="text" class="form-control" id="signature"><br><br>
+      <button type="submit" class="btn btn-default">Submit</button>
+    </form>
+</div>
+
+</body>
