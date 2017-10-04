@@ -20,8 +20,9 @@ from transaction import RegistrationTransaction, VoteTransaction
 from block import BlockMiner
 import texter
 
+PORT=80
 tornado.options.define("port",
-                       default=80,
+                       default=PORT,
                        help="Webapp runs on this port",
                        type=int)
 
@@ -111,7 +112,7 @@ class WebRegistrationHandler(tornado.web.RequestHandler):
         # Push the registration transaction into our DB via HTTP call
         http = httpclient.AsyncHTTPClient()
         data = json.dumps(r)
-        http.fetch("http://127.0.0.1:8080/registration",
+        http.fetch("http://127.0.0.1:{}/registration".format(PORT),
                    handle_request, method='POST', body=data)
 
         # Re-direct to the vote page
@@ -159,7 +160,7 @@ class WebVotingHandler(tornado.web.RequestHandler):
             # Push the registration transaction into our DB via HTTP call
             http = httpclient.AsyncHTTPClient()
             data = json.dumps(t)
-            http.fetch("http://127.0.0.1:8080/vote",
+            http.fetch("http://127.0.0.1:{}/vote".format(PORT),
                        handle_request, method='POST', body=data)
             self.write('YOUR VOTE HAS BEEN SUBMITTED')
         
