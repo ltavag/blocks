@@ -36,7 +36,7 @@
         "type": "MAJORITY"
     },
     {
-        "description": "",
+        "description": "Please pick two choices here",
         "name": "StateDistrictMM",
         "options": [
             {
